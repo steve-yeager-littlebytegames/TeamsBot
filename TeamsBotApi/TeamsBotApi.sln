@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamsBotApi", "TeamsBotApi\TeamsBotApi.csproj", "{ADE77129-1FAA-4C56-B8C0-C0ED0F5AA7D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsBotApi", "TeamsBotApi\TeamsBotApi.csproj", "{ADE77129-1FAA-4C56-B8C0-C0ED0F5AA7D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildSystem", "BuildSystem\BuildSystem.csproj", "{D07A56F6-337E-490B-A5D6-B1E9A04B5B43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildSystem", "BuildSystem\BuildSystem.csproj", "{D07A56F6-337E-490B-A5D6-B1E9A04B5B43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildSystem.Cli", "BuildSystem.Cli\BuildSystem.Cli.csproj", "{A4402D01-2EF5-46FD-A4C6-8C63F27CA44D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D07A56F6-337E-490B-A5D6-B1E9A04B5B43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D07A56F6-337E-490B-A5D6-B1E9A04B5B43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D07A56F6-337E-490B-A5D6-B1E9A04B5B43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4402D01-2EF5-46FD-A4C6-8C63F27CA44D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4402D01-2EF5-46FD-A4C6-8C63F27CA44D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4402D01-2EF5-46FD-A4C6-8C63F27CA44D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4402D01-2EF5-46FD-A4C6-8C63F27CA44D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,7 +18,13 @@ namespace BuildSystem
 
         public async Task StartAsync()
         {
-            throw new NotImplementedException();
+            Status = StageStatus.Running;
+            StartTime = DateTime.Now;
+
+            await Task.Delay(1000);
+
+            Status = StageStatus.Succeeded;
+            EndTime = DateTime.Now;
         }
     }
 }

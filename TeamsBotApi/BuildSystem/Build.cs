@@ -30,7 +30,16 @@ namespace BuildSystem
 
         public async Task StartAsync()
         {
-            throw new NotImplementedException();
+            Status = BuildStatus.Running;
+            StartTime = DateTime.Now;
+
+            foreach(var stage in Stages)
+            {
+                await stage.StartAsync();
+            }
+
+            Status = BuildStatus.Succeeded;
+            EndTime = DateTime.Now;
         }
     }
 }
