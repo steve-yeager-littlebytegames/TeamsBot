@@ -1,0 +1,56 @@
+@startuml Builder
+Build *-- Stage
+BuildStatus <|-- Build
+StageStatus <|-- Stage
+Build o-- BuildFactory
+BuildDefinition <|-- BuildFactory
+
+class BuildFactory {
+    builds: Build[]
+    QueueBuild(build: string, successChance: int): Build
+}
+hide BuildFactory fields
+
+class BuildDefinition {
+    name: string
+    stages: string[]
+}
+hide BuildDefinition methods
+
+class Build {
+    queueTime: DateTime
+    startTime: DateTime
+    endTime: DateTime
+    number: int
+    status: BuildStatus
+    stages: Stage[]
+    StartAsync(): void
+}
+
+enum BuildStatus {
+    None
+    Queued
+    Running
+    Failed
+    Succeeded
+    Cancelled
+}
+hide BuildStatus methods
+
+class Stage {
+    name: string
+    status: StageStatus
+    startTime: DateTime
+    endTime: DateTime
+    StartAsync(): void
+}
+
+enum StageStatus {
+    None
+    Running
+    Failed
+    Succeeded
+    Cancelled
+}
+hide StageStatus methods
+@enduml
