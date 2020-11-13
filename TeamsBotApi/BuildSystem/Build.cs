@@ -6,12 +6,13 @@ namespace BuildSystem
 {
     public class Build
     {
-        public delegate void BuildCompleteDelegate(Build build);
+        public delegate Task BuildCompleteDelegate(Build build);
 
         public delegate void StageCompleteDelegate(Build build, Stage stage);
 
         public event BuildCompleteDelegate BuildCompleteEvent;
 
+        public Guid Id { get; }
         public string Name { get; }
         public int Number { get; }
         public IReadOnlyCollection<Stage> Stages { get; }
@@ -21,8 +22,11 @@ namespace BuildSystem
         public DateTime EndTime { get; private set; }
         public BuildStatus Status { get; private set; }
 
+        public TimeSpan BuildDuration => EndTime - StartTime;
+
         public Build(string name, int number, IReadOnlyCollection<Stage> stages)
         {
+            Id = Guid.NewGuid();
             Name = name;
             Number = number;
             Stages = stages;

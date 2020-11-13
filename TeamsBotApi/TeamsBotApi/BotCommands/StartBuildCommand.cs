@@ -1,13 +1,20 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BuildSystem;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Teams;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 
 namespace TeamsBotApi.BotCommands
 {
     public class StartBuildCommand : BotCommand
     {
+        private  string ServiceUrl;
+        private string conversationId;
+
         public StartBuildCommand()
             : base("build")
         {
@@ -27,13 +34,32 @@ namespace TeamsBotApi.BotCommands
 
         protected override async Task ExecuteAsync(BuildFactory buildFactory, BuildMonitor buildMonitor, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
+            conversationId = turnContext.Activity.Conversation.Id;
+            ServiceUrl = turnContext.Activity.ServiceUrl;
+
             var buildName = split[1];
 
             var build = buildFactory.CreateBuild(buildName);
             buildMonitor.AddBuild(build);
-            build.BuildCompleteEvent += async b => await SendMessageAsync($"Build {build} finished with {build.Status}", turnContext, CancellationToken.None);
+            build.BuildCompleteEvent += SendMessage;
+            //build.BuildCompleteEvent += async b => await SendMessageAsync($"Build {build} finished with {build.Status} in {build.EndTime-build.StartTime:g}", turnContext, CancellationToken.None);
 
             await SendMessageAsync($"Created build {build}", turnContext, cancellationToken);
+        }
+
+        private async Task SendMessage(Build build)
+        {
+            var message = $"Build {build} finished with {build.Status} in {build.BuildDuration:g}";
+            var activity = MessageFactory.Text(message);
+            activity.Summary = message;
+            activity.TeamsNotifyUser();
+
+            AppCredentials.TrustServiceUrl(ServiceUrl);
+
+            var credentials = new MicrosoftAppCredentials("cba04884-c4c6-4dd7-b4e9-4e23c1f5e6e1", "Aaq7yD2Yrb.70kn4d57AY.j8B.NlW2_JKP");
+
+            var connectorClient = new ConnectorClient(new Uri(ServiceUrl), credentials);
+            await connectorClient.Conversations.SendToConversationAsync(conversationId, activity);
         }
     }
 }

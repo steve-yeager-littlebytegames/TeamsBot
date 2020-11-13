@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace BuildSystem
@@ -21,8 +22,9 @@ namespace BuildSystem
             Status = StageStatus.Running;
             StartTime = DateTime.Now;
 
-            var time = new Random().NextDouble() * 3;
-            await Task.Delay((int)(time * 1000));
+            var time = (int)(new Random().NextDouble() * 3 * 1000);
+            Debug.WriteLine($"Stage '{Name}' will take '{time}' ms.");
+            await Task.Delay(time);
 
             Status = StageStatus.Succeeded;
             EndTime = DateTime.Now;
