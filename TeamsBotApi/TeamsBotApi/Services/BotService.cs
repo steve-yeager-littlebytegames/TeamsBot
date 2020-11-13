@@ -1,14 +1,27 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildSystem;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
+using TeamsBotApi.BotCommands;
 
 namespace TeamsBotApi.Services
 {
     public class BotService : TeamsActivityHandler
     {
+        private readonly BuildMonitor buildMonitor;
+        private readonly BuildFactory buildFactory;
+        private readonly IReadOnlyCollection<BotCommand> botCommands = new[] {new StartBuildCommand("/build"),};
+
+        public BotService(BuildMonitor buildMonitor, BuildFactory buildFactory)
+        {
+            this.buildMonitor = buildMonitor;
+            this.buildFactory = buildFactory;
+        }
+
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             turnContext.Activity.RemoveRecipientMention();
@@ -28,22 +41,17 @@ namespace TeamsBotApi.Services
         private async Task ProcessCommandAsync(string text, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var split = text.Split();
+            var botCommand = botCommands.FirstOrDefault(bc => split[0] == bc.CommandString.ToLower());
 
-            var replyText = "That command is not supported";
-
-            switch(split[0])
+            if(botCommand == null)
             {
-                case "/randomnumber":
-                    var min = int.Parse(split[1]);
-                    var max = int.Parse(split[2]);
-
-                    var random = new Random();
-                    var value = random.Next(min, max);
-                    replyText = $"You rolled a '{value}'";
-                    break;
+                const string replyText = "That command is not supported";
+                await turnContext.SendActivityAsync(MessageFactory.Text(replyText, replyText), cancellationToken);
             }
-
-            await turnContext.SendActivityAsync(MessageFactory.Text(replyText, replyText), cancellationToken);
+            else
+            {
+                await botCommand.RunAsync(buildFactory, buildMonitor, text, split, turnContext, cancellationToken);
+            }
         }
     }
 }

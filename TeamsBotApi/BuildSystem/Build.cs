@@ -22,6 +22,8 @@ namespace BuildSystem
             Stages = stages;
         }
 
+        public override string ToString() => $"{Name}#{Number}";
+
         public void Queue()
         {
             Status = BuildStatus.Queued;

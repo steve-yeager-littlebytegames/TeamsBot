@@ -12,7 +12,7 @@ namespace BuildSystem
 
         public Build CreateBuild(string definitionName)
         {
-            var definition = buildDefinitions.First(bd => bd.Name == definitionName);
+            var definition = buildDefinitions.First(bd => bd.Name.ToLower() == definitionName.ToLower());
             return new Build(definitionName, 0, definition.StageNames.Select(sn => new Stage(sn)).ToArray());
         }
     }

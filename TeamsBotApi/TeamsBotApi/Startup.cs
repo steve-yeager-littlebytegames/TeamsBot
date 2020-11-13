@@ -1,3 +1,4 @@
+using BuildSystem;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -25,6 +26,9 @@ namespace TeamsBotApi
 
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
             services.AddTransient<IBot, BotService>();
+
+            services.AddTransient<BuildMonitor>();
+            services.AddTransient<BuildFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
