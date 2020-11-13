@@ -8,8 +8,8 @@ namespace TeamsBotApi.BotCommands
 {
     public class StartBuildCommand : BotCommand
     {
-        public StartBuildCommand(string commandString)
-            : base(commandString)
+        public StartBuildCommand()
+            : base("build")
         {
         }
 
@@ -31,6 +31,7 @@ namespace TeamsBotApi.BotCommands
 
             var build = buildFactory.CreateBuild(buildName);
             buildMonitor.AddBuild(build);
+            build.BuildCompleteEvent += async b => await SendMessageAsync($"Build {build} finished with {build.Status}", turnContext, CancellationToken.None);
 
             await SendMessageAsync($"Created build {build}", turnContext, cancellationToken);
         }

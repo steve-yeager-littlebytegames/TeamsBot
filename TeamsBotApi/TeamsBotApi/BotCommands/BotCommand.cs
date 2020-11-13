@@ -12,7 +12,7 @@ namespace TeamsBotApi.BotCommands
 
         protected BotCommand(string commandString)
         {
-            CommandString = commandString;
+            CommandString = $"/{commandString}";
         }
 
         protected abstract (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext);

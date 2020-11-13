@@ -21,7 +21,8 @@ namespace BuildSystem
             Status = StageStatus.Running;
             StartTime = DateTime.Now;
 
-            await Task.Delay(1000);
+            var time = new Random().NextDouble() * 3;
+            await Task.Delay((int)(time * 1000));
 
             Status = StageStatus.Succeeded;
             EndTime = DateTime.Now;

@@ -6,6 +6,12 @@ namespace BuildSystem
 {
     public class Build
     {
+        public delegate void BuildCompleteDelegate(Build build);
+
+        public delegate void StageCompleteDelegate(Build build, Stage stage);
+
+        public event BuildCompleteDelegate BuildCompleteEvent;
+
         public string Name { get; }
         public int Number { get; }
         public IReadOnlyCollection<Stage> Stages { get; }
@@ -42,6 +48,8 @@ namespace BuildSystem
 
             Status = BuildStatus.Succeeded;
             EndTime = DateTime.Now;
+
+            BuildCompleteEvent?.Invoke(this);
         }
     }
 }
