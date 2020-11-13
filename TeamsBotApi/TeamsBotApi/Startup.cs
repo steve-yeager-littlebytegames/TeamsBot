@@ -27,8 +27,8 @@ namespace TeamsBotApi
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
             services.AddTransient<IBot, BotService>();
 
-            services.AddTransient<BuildMonitor>();
-            services.AddTransient<BuildFactory>();
+            services.AddSingleton<BuildMonitor>();
+            services.AddSingleton<BuildFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

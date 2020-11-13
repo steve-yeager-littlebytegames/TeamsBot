@@ -5,15 +5,17 @@ namespace BuildSystem
 {
     public class BuildFactory
     {
-        private readonly IReadOnlyCollection<BuildDefinition> buildDefinitions = new[]
+        private readonly IReadOnlyCollection<BuildPipeline> pipelines = new[]
         {
-            new BuildDefinition("Client", new[] {"Pull", "Compile", "Test", "Deploy"}),
+            new BuildPipeline("Client", new BuildMetadata(), new BuildDefinition("Pull", "Compile", "Assets", "Test", "Upload")),
+            new BuildPipeline("Server", new BuildMetadata(), new BuildDefinition("Pull", "Compile", "Test", "Deploy", "Acceptance Tests")),
         };
 
-        public Build CreateBuild(string definitionName)
+        public Build CreateBuild(string buildName)
         {
-            var definition = buildDefinitions.First(bd => bd.Name.ToLower() == definitionName.ToLower());
-            return new Build(definitionName, 0, definition.StageNames.Select(sn => new Stage(sn)).ToArray());
+            var pipeline = pipelines.First(bd => bd.Name.ToLower() == buildName.ToLower());
+            ++pipeline.Metadata.BuildCount;
+            return new Build(buildName, pipeline.Metadata.BuildCount, pipeline.Definition.StageNames.Select(sn => new Stage(sn)).ToArray());
         }
     }
 }
