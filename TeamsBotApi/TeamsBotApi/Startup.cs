@@ -35,12 +35,10 @@ namespace TeamsBotApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
+            app.UseWebSockets();
+            //app.UseHttpsRedirection();
             app.UseRouting();
-
-            app.UseAuthorization();
-
+            //app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
