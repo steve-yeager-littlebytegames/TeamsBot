@@ -1,0 +1,175 @@
+Responsibilities
+- create builds
+- send build event notifications
+- send stage event notifications
+- send message to users
+- define builds
+- build
+- stage
+- queue builds
+- run a build
+- keep build metadata
+- facade API
+- teams commands
+
+@startuml Builder
+package "BuildSystem" {
+    Stage --* Build
+    BuildStatus <-- Build
+    StageStatus <-- Stage
+    Build <-- BuildFactory
+    BuildRunner --o BuildMonitor
+    BuildMonitor --o BuildSystem
+    BuildFactory --o BuildSystem
+    BuildDb --o BuildFactory
+    BuildMetadata --o BuildDb
+    BuildDefinition --o BuildDb
+    Build --o BuildRunner
+    BuildMonitor --|> IBuildNotifier
+    BuildSystem --|> IBuildNotifier
+}
+
+interface IBuildNotifier {
+
+}
+
+class BuildSystem {
+    monitor: BuildMonitor
+    factory: BuildFactory
+    CreateBuildAsync(definitionName: string): Task<Build>
+}
+
+class BuildMonitor {
+    runners: BuildRunner[]
+    BuildUpdateEvent: Action<Build>
+    StageUpdateEvent: Action<Build, Stage>
+    AddBuildAsync(build: Build): Task
+    RegisterBuildUpdates(onUpdate: Action<Build>): void
+    RegisterStageUpdates(onUpdate: Action<Build, Stage>): void
+}
+
+class BuildRunner {
+    activeBuild: Build
+    isIdle: bool
+    RunBuild(build: Build): void
+}
+
+class BuildMetadata {
+    definitionId: Guid
+    count: int
+}
+hide BuildMetadata methods
+
+class BuildDb {
+    metadata: BuildMetadata[]
+    definitions: BuildDefinition[]
+}
+hide BuildDb methods
+
+class BuildFactory {
+    builds: Build[]
+    QueueBuild(build: string, successChance: int): Build
+}
+hide BuildFactory fields
+
+class BuildDefinition {
+    id: Guid
+    name: string
+    stages: string[]
+}
+hide BuildDefinition methods
+
+class Build {
+    queueTime: DateTime
+    startTime: DateTime
+    endTime: DateTime
+    number: int
+    status: BuildStatus
+    stages: Stage[]
+    StartAsync(): void
+}
+
+enum BuildStatus {
+    None
+    Queued
+    Running
+    Failed
+    Succeeded
+    Cancelled
+}
+hide BuildStatus methods
+
+class Stage {
+    name: string
+    status: StageStatus
+    startTime: DateTime
+    endTime: DateTime
+    StartAsync(): void
+}
+
+enum StageStatus {
+    None
+    Running
+    Failed
+    Succeeded
+    Cancelled
+    Skipped
+}
+hide StageStatus methods
+
+package "WebApi" {
+    Notification --o NotificationDb
+    NotificationDb --o NotificationService
+    NotificationService --o BuildService
+    BuildSystem --o BuildService
+    QueueCommand --|> BotCommand
+    BuildCommand --|> BotCommand
+    BuildService o-- CommandParser
+    CommandParser o-- BotCommand
+    BotCommand --> BuildSystem
+}
+
+class NotificationDb {
+    notifications: Notification[]
+}
+hide NotificationDb methods
+
+class Notification {
+    channelId: string
+    buildId: Guid
+}
+hide Notification methods
+
+class NotificationService {
+    notificationDb: NotificationDb
+    AddNotificationAsync(channelId: string, buildId: Guid): Task
+}
+
+class BuildService {
+    notificationService: NotificationService
+    buildSystem: BuildSystem
+    commandParser: CommandParser
+    ProcessCommandAsync(message): Task
+}
+
+class BotCommand {
+    commandString: string
+    Validate(message): bool
+    ExecuteAsync(message, buildSystem: BuildSystem): Task
+}
+
+class QueueCommand {
+}
+hide QueueCommand methods
+hide QueueCommand fields
+
+class BuildCommand {
+}
+hide BuildCommand methods
+hide BuildCommand fields
+
+class CommandParser {
+    commands: BotCommand[]
+    Parse(input: string): BotCommand
+}
+@enduml
