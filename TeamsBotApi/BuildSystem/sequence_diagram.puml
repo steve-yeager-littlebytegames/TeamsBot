@@ -1,13 +1,42 @@
 @startuml Builder
-actor Foo1
-boundary Foo2
-control Foo3
-entity Foo4
-database Foo5
-collections Foo6
-Foo1 -> Foo2 : To boundary
-Foo1 -> Foo3 : To control
-Foo1 -> Foo4 : To entity
-Foo1 -> Foo5 : To database
-Foo1 -> Foo6 : To collections
+actor Teams
+boundary API
+control BuildService
+control CommandParser
+control BuildCommand
+control BuildSystem
+control BuildFactory
+database BuildDb
+control BuildMonitor
+control NotificationService
+database NotificationDb
+
+Teams -> API : /api/messages
+activate API
+API -> BuildService : ProcessCommandAsync
+activate BuildService
+BuildService -> CommandParser : ParseCommand
+activate CommandParser
+return BuildCommand
+BuildService -> BuildCommand : Execute
+activate BuildCommand
+BuildCommand -> BuildSystem : CreateBuildAsync
+group BuildSystem Library
+activate BuildSystem
+BuildSystem -> BuildFactory : CreateBuildAsync
+activate BuildFactory
+BuildFactory -> BuildDb : Save build
+return Build
+BuildSystem -> BuildMonitor : AddBuildAsync
+activate BuildMonitor
+return
+end
+return Build
+BuildCommand -> NotificationService : AddNotificationAsync
+activate NotificationService
+NotificationService -> NotificationDb : Save notification
+return
+return
+return
+return
 @enduml

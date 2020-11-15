@@ -36,14 +36,14 @@ interface IBuildNotifier {
 class BuildSystem {
     monitor: BuildMonitor
     factory: BuildFactory
-    Build(definitionName: string): Build
+    CreateBuildAsync(definitionName: string): Task<Build>
 }
 
 class BuildMonitor {
     runners: BuildRunner[]
     BuildUpdateEvent: Action<Build>
     StageUpdateEvent: Action<Build, Stage>
-    AddBuild(build: Build): void
+    AddBuildAsync(build: Build): Task
     RegisterBuildUpdates(onUpdate: Action<Build>): void
     RegisterStageUpdates(onUpdate: Action<Build, Stage>): void
 }
@@ -142,14 +142,14 @@ hide Notification methods
 
 class NotificationService {
     notificationDb: NotificationDb
-    AddNotification(channelId: string, buildId: Guid): void
+    AddNotificationAsync(channelId: string, buildId: Guid): Task
 }
 
 class BuildService {
     notificationService: NotificationService
     buildSystem: BuildSystem
     commandParser: CommandParser
-    RunCommandAsync(message): Task
+    ProcessCommandAsync(message): Task
 }
 
 class BotCommand {
