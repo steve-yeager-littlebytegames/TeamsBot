@@ -6,7 +6,7 @@ namespace BuildSystem
 {
     public class BuildMonitor
     {
-        private readonly Queue<Build> queuedBuilds = new Queue<Build>();
+        public readonly Queue<Build> queuedBuilds = new Queue<Build>();
         private readonly IReadOnlyCollection<BuildRunner> buildRunners = new[] {new BuildRunner()};
 
         public event Action<Build> BuildCompleteEvent;

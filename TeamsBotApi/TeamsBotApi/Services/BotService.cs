@@ -14,7 +14,7 @@ namespace TeamsBotApi.Services
     {
         private readonly BuildMonitor buildMonitor;
         private readonly BuildFactory buildFactory;
-        private readonly IReadOnlyCollection<BotCommand> botCommands = new[] {new StartBuildCommand(),};
+        private readonly IReadOnlyCollection<BotCommand> botCommands = new BotCommand[] {new StartBuildCommand(), new ShowBuildQueueCommand(),};
 
         public BotService(BuildMonitor buildMonitor, BuildFactory buildFactory)
         {

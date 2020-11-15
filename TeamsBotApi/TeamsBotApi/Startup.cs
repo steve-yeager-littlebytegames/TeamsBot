@@ -25,7 +25,7 @@ namespace TeamsBotApi
             services.AddControllers();
 
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
-            services.AddTransient<IBot, BotService>();
+            services.AddSingleton<IBot, BotService>();
 
             services.AddSingleton<BuildMonitor>();
             services.AddSingleton<BuildFactory>();
