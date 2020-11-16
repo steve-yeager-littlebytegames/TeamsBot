@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BuildSystem.Api;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using TeamsBotApi.Services;
 
 namespace TeamsBotApi.BotCommands
 {
@@ -17,15 +18,16 @@ namespace TeamsBotApi.BotCommands
 
         protected abstract (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext);
 
-        protected abstract Task ExecuteAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
+        protected abstract Task ExecuteInternalAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
 
-        public async Task RunAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task ExecuteAsync(BuildFacade buildFacade, NotificationService notificationService, string text, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
+            var split = text.Split();
             var (isValid, errorMessage) = Validate(text, split, turnContext);
 
             if(isValid)
             {
-                await ExecuteAsync(buildFacade, text, split, turnContext, cancellationToken);
+                await ExecuteInternalAsync(buildFacade, text, split, turnContext, cancellationToken);
             }
             else
             {

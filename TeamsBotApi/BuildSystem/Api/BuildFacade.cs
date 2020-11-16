@@ -10,11 +10,11 @@ namespace BuildSystem.Api
 
         public IReadOnlyCollection<Build> QueuedBuilds => buildMonitor.QueuedBuilds;
 
-        public BuildFacade(IBuildMetadataRepository buildBuildMetadataRepository = null)
+        public BuildFacade(IBuildRepository buildBuildRepository = null)
         {
-            buildBuildMetadataRepository ??= new InMemoryBuildMetadataRepository();
+            buildBuildRepository ??= new InMemoryBuildRepository();
 
-            buildFactory = new BuildFactory(buildBuildMetadataRepository);
+            buildFactory = new BuildFactory(buildBuildRepository);
         }
 
         public async Task<Build> CreateBuildAsync(string definitionName)

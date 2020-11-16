@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BuildSystem;
 using BuildSystem.Api;
+using CommandLine;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
@@ -11,10 +12,14 @@ using Microsoft.Bot.Schema;
 
 namespace TeamsBotApi.BotCommands
 {
+    [Verb("/build")]
     public class StartBuildCommand : BotCommand
     {
         private string serviceUrl; // TODO: Hardcode.
         private string conversationId;
+
+        [Option('w', "watch")]
+        public bool ShouldWatch { get; set; }
 
         public StartBuildCommand()
             : base("build")
@@ -33,7 +38,7 @@ namespace TeamsBotApi.BotCommands
             return (false, "Don't know what build to start.");
         }
 
-        protected override async Task ExecuteAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task ExecuteInternalAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             conversationId = turnContext.Activity.Conversation.Id;
             serviceUrl = turnContext.Activity.ServiceUrl;

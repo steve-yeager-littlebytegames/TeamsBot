@@ -5,7 +5,7 @@ using BuildSystem.Api;
 
 namespace BuildSystem
 {
-    internal class InMemoryBuildMetadataRepository : IBuildMetadataRepository
+    internal class InMemoryBuildRepository : IBuildRepository
     {
         private readonly List<BuildMetadata> repository = new List<BuildMetadata>();
 

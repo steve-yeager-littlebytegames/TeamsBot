@@ -7,7 +7,7 @@ namespace BuildSystem
 {
     internal class BuildFactory : IBuildCreator
     {
-        private readonly IBuildMetadataRepository buildMetadataRepository;
+        private readonly IBuildRepository buildRepository;
 
         private readonly IReadOnlyCollection<BuildDefinition> buildDefinitions = new[]
         {
@@ -15,14 +15,14 @@ namespace BuildSystem
             new BuildDefinition("Server", "Pull", "Compile", "Test", "Deploy", "Acceptance Tests"),
         };
 
-        public BuildFactory(IBuildMetadataRepository buildMetadataRepository)
+        public BuildFactory(IBuildRepository buildRepository)
         {
-            this.buildMetadataRepository = buildMetadataRepository;
+            this.buildRepository = buildRepository;
 
             // TODO: Only if not seeded.
             foreach(var buildDefinition in buildDefinitions)
             {
-                buildMetadataRepository.SaveAsync(new BuildMetadata(buildDefinition.Name)).GetAwaiter().GetResult();
+                buildRepository.SaveAsync(new BuildMetadata(buildDefinition.Name)).GetAwaiter().GetResult();
             }
         }
 
@@ -30,12 +30,12 @@ namespace BuildSystem
         {
             var buildDefinition = buildDefinitions.First(bd => bd.Name.ToLower() == definitionName.ToLower());
 
-            var metaData = await buildMetadataRepository.LoadAsync(definitionName);
+            var metaData = await buildRepository.LoadAsync(definitionName);
             ++metaData.BuildCount;
 
             var build = new Build(definitionName, metaData.BuildCount, buildDefinition.StageNames.Select(sn => new Stage(sn)).ToArray());
 
-            await buildMetadataRepository.SaveAsync(metaData);
+            await buildRepository.SaveAsync(metaData);
 
             return build;
         }

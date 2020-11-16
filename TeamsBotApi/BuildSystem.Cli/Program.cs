@@ -6,12 +6,12 @@ namespace BuildSystem.Cli
     {
         static void Main(string[] args)
         {
-            var buildSystem = new Api.BuildFacade();
-            buildMonitor.BuildCompleteEvent += OnBuildComplete;
+            //var buildSystem = new Api.BuildFacade();
+            //buildMonitor.BuildCompleteEvent += OnBuildComplete;
 
-            var build = buildFactory.CreateBuild("Client");
-            buildMonitor.AddBuild(build);
-            Console.ReadLine();
+            //var build = buildFactory.CreateBuild("Client");
+            //buildMonitor.AddBuild(build);
+            //Console.ReadLine();
         }
 
         private static void OnBuildComplete(Build build)
