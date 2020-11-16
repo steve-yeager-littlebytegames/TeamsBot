@@ -27,6 +27,7 @@ package "BuildSystem" {
     Build --o BuildRunner
     BuildMonitor --|> IBuildNotifier
     BuildSystem --|> IBuildNotifier
+    BuildFactory o-- IBuildRepository
 }
 
 interface IBuildNotifier {
@@ -67,10 +68,9 @@ class BuildDb {
 hide BuildDb methods
 
 class BuildFactory {
-    builds: Build[]
-    QueueBuild(build: string, successChance: int): Build
+    buildRepository: IBuildRepository
+    CreateBuildAsync(definitionName: string): Task<Build>
 }
-hide BuildFactory fields
 
 class BuildDefinition {
     id: Guid
