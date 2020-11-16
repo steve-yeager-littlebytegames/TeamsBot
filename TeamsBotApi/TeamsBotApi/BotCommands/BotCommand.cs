@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BuildSystem;
+using BuildSystem.Api;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
@@ -17,15 +17,15 @@ namespace TeamsBotApi.BotCommands
 
         protected abstract (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext);
 
-        protected abstract Task ExecuteAsync(BuildFactory buildFactory, BuildMonitor buildMonitor, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
+        protected abstract Task ExecuteAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
 
-        public async Task RunAsync(BuildFactory buildFactory, BuildMonitor buildMonitor, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task RunAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var (isValid, errorMessage) = Validate(text, split, turnContext);
 
             if(isValid)
             {
-                await ExecuteAsync(buildFactory, buildMonitor, text, split, turnContext, cancellationToken);
+                await ExecuteAsync(buildFacade, text, split, turnContext, cancellationToken);
             }
             else
             {

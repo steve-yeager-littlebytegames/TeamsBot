@@ -6,7 +6,7 @@ namespace BuildSystem.Cli
     {
         static void Main(string[] args)
         {
-            var buildSystem = new Api.BuildSystem();
+            var buildSystem = new Api.BuildFacade();
             buildMonitor.BuildCompleteEvent += OnBuildComplete;
 
             var build = buildFactory.CreateBuild("Client");

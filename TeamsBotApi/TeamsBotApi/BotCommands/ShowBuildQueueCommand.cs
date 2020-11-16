@@ -1,13 +1,13 @@
 ﻿using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BuildSystem;
+using BuildSystem.Api;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
 namespace TeamsBotApi.BotCommands
 {
-    public class ShowBuildQueueCommand: BotCommand
+    public class ShowBuildQueueCommand : BotCommand
     {
         public ShowBuildQueueCommand()
             : base("queue")
@@ -19,11 +19,11 @@ namespace TeamsBotApi.BotCommands
             return (true, string.Empty);
         }
 
-        protected override async Task ExecuteAsync(BuildFactory buildFactory, BuildMonitor buildMonitor, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var message = new StringBuilder();
-            message.AppendLine($"Builds in queue: {buildMonitor.queuedBuilds.Count}");
-            foreach(var build in buildMonitor.queuedBuilds)
+            message.AppendLine($"Builds in queue: {buildFacade.QueuedBuilds.Count}");
+            foreach(var build in buildFacade.QueuedBuilds)
             {
                 message.AppendLine($"# {build}");
             }

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BuildSystem.Api;
 
 namespace BuildSystem
 {
-    internal class BuildMonitor
+    internal class BuildMonitor : IBuildQueue
     {
-        public readonly Queue<Build> queuedBuilds = new Queue<Build>();
+        private readonly Queue<Build> queuedBuilds = new Queue<Build>();
         private readonly IReadOnlyCollection<BuildRunner> buildRunners = new[] {new BuildRunner()};
 
         public event Action<Build> BuildCompleteEvent;
+
+        public IReadOnlyCollection<Build> QueuedBuilds => queuedBuilds;
 
         public void QueueBuild(Build build)
         {

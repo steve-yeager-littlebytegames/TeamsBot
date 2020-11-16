@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BuildSystem;
+using BuildSystem.Api;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
@@ -12,7 +13,7 @@ namespace TeamsBotApi.BotCommands
 {
     public class StartBuildCommand : BotCommand
     {
-        private  string ServiceUrl;
+        private string ServiceUrl; // TODO: Hardcode.
         private string conversationId;
 
         public StartBuildCommand()
@@ -32,15 +33,14 @@ namespace TeamsBotApi.BotCommands
             return (false, "Don't know what build to start.");
         }
 
-        protected override async Task ExecuteAsync(BuildFactory buildFactory, BuildMonitor buildMonitor, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             conversationId = turnContext.Activity.Conversation.Id;
             ServiceUrl = turnContext.Activity.ServiceUrl;
 
             var buildName = split[1];
 
-            var build = buildFactory.CreateBuild(buildName);
-            buildMonitor.AddBuild(build);
+            var build = await buildFacade.CreateBuildAsync(buildName);
             build.BuildCompleteEvent += SendMessage;
             //build.BuildCompleteEvent += async b => await SendMessageAsync($"Build {build} finished with {build.Status} in {build.EndTime-build.StartTime:g}", turnContext, CancellationToken.None);
 

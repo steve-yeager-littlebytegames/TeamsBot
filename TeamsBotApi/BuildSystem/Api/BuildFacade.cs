@@ -1,13 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BuildSystem.Api
 {
-    public class BuildSystem : IBuildCreator
+    public class BuildFacade : IBuildCreator, IBuildQueue
     {
         private readonly BuildFactory buildFactory;
         private readonly BuildMonitor buildMonitor = new BuildMonitor();
 
-        public BuildSystem(IBuildMetadataRepository buildBuildMetadataRepository = null)
+        public IReadOnlyCollection<Build> QueuedBuilds => buildMonitor.QueuedBuilds;
+
+        public BuildFacade(IBuildMetadataRepository buildBuildMetadataRepository = null)
         {
             buildBuildMetadataRepository ??= new InMemoryBuildMetadataRepository();
 
