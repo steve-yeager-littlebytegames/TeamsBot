@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BuildSystem.Api;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
@@ -10,20 +9,22 @@ using TeamsBotApi.BotCommands;
 
 namespace TeamsBotApi.Services
 {
-    public class BotHandlder : TeamsActivityHandler
+    public class BotHandler : TeamsActivityHandler
     {
-        private readonly BuildFacade buildFacade;
+        private readonly BuildService buildService;
         private readonly IReadOnlyCollection<BotCommand> botCommands = new BotCommand[] {new StartBuildCommand(), new ShowBuildQueueCommand(),};
 
-        public BotHandlder(BuildFacade buildFacade)
+        public BotHandler(BuildService buildService)
         {
-            this.buildFacade = buildFacade;
+            this.buildService = buildService;
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             turnContext.Activity.RemoveRecipientMention();
             var text = turnContext.Activity.Text.Trim().ToLower();
+
+            await buildService.ProcessCommandAsync(text, turnContext, cancellationToken);
 
             if(text.StartsWith("/"))
             {

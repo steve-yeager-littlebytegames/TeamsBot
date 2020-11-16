@@ -1,4 +1,9 @@
-﻿using BuildSystem.Api;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using BuildSystem.Api;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Schema;
 
 namespace TeamsBotApi.Services
 {
@@ -11,6 +16,11 @@ namespace TeamsBotApi.Services
         {
             this.notificationService = notificationService;
             this.buildFacade = buildFacade;
+        }
+
+        public async Task ProcessCommandAsync(string message, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
