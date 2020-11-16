@@ -19,6 +19,7 @@ namespace BuildSystem
         {
             this.buildMetadataRepository = buildMetadataRepository;
 
+            // TODO: Only if not seeded.
             foreach(var buildDefinition in buildDefinitions)
             {
                 buildMetadataRepository.SaveAsync(new BuildMetadata(buildDefinition.Name)).GetAwaiter().GetResult();
