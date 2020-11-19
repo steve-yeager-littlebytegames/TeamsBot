@@ -1,24 +1,21 @@
-﻿using System.Threading.Tasks;
-using BuildSystem;
-using BuildSystem.Api;
+﻿using BuildSystem;
 using Microsoft.EntityFrameworkCore;
 
 namespace TeamsBotApi.Data
 {
-    public class BuildDbContext : DbContext, IBuildRepository
+    public class BuildDbContext : DbContext
     {
         public DbSet<BuildMetadata> Metadata { get; set; }
 
-        public async Task SaveAsync(BuildMetadata entity)
+        public BuildDbContext(DbContextOptions<BuildDbContext> options)
+            : base(options)
         {
-            Add(entity);
-            await SaveChangesAsync();
         }
 
-        public async Task<BuildMetadata> LoadAsync(string definitionName)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var metadata = await Metadata.FirstAsync(md => md.DefinitionName == definitionName);
-            return metadata;
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<BuildMetadata>().HasKey(nameof(BuildMetadata.DefinitionName));
         }
     }
 }

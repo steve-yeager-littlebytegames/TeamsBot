@@ -1,11 +1,16 @@
+using System.Linq;
+using BuildSystem;
 using BuildSystem.Api;
+using BuildSystem.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TeamsBotApi.Data;
 using TeamsBotApi.Services;
 
 namespace TeamsBotApi
@@ -22,12 +27,19 @@ namespace TeamsBotApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<NotificationDbContext>(options => options.UseInMemoryDatabase("Notifications"));
+            services.AddDbContext<BuildDbContext>(options => options.UseInMemoryDatabase("Builds"), ServiceLifetime.Singleton);
+
             services.AddControllers();
 
-            services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
-            services.AddSingleton<IBot, BotHandler>();
+            services.AddTransient<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddTransient<IBot, BotHandler>();
 
-            services.AddSingleton<BuildFacade>();
+            services.AddSingleton(s => new BuildFacade(s.GetService<IBuildRepository>()));
+            services.AddSingleton<IBuildRepository, BuildRepository>();
+            services.AddTransient<CommandParser>();
+            services.AddTransient<CommandService>();
+            services.AddTransient<NotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +55,22 @@ namespace TeamsBotApi
             app.UseRouting();
             //app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            SeedDatabase(app);
+        }
+
+        private static void SeedDatabase(IApplicationBuilder app)
+        {
+            var context = app.ApplicationServices.GetService<BuildDbContext>();
+            context.Database.EnsureCreated();
+
+            if(context.Metadata.Any())
+            {
+                return;
+            }
+
+            context.Metadata.AddRange(BuildDefinitions.Definitions.Select(bd => new BuildMetadata(bd.Name)));
+            context.SaveChanges();
         }
     }
 }
