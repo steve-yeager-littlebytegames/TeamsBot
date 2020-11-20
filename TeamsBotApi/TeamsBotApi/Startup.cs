@@ -37,9 +37,9 @@ namespace TeamsBotApi
 
             services.AddSingleton(s => new BuildFacade(s.GetService<IBuildRepository>()));
             services.AddSingleton<IBuildRepository, BuildRepository>();
+            services.AddSingleton<NotificationService>();
             services.AddTransient<CommandParser>();
             services.AddTransient<CommandService>();
-            services.AddTransient<NotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,21 +1,17 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using BuildSystem;
 using BuildSystem.Api;
 using CommandLine;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Teams;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using TeamsBotApi.Data;
+using TeamsBotApi.Services;
 
 namespace TeamsBotApi.BotCommands
 {
     [Verb("/build")]
     public class StartBuildCommand : BotCommand
     {
-        private const string ServiceUrl = "https://smba.trafficmanager.net/amer/";
         private string conversationId;
 
         [Option('w', "watch")]
@@ -38,32 +34,17 @@ namespace TeamsBotApi.BotCommands
             return (false, "Don't know what build to start.");
         }
 
-        protected override async Task ExecuteInternalAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task ExecuteInternalAsync(BuildFacade buildFacade, NotificationService notificationService, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             conversationId = turnContext.Activity.Conversation.Id;
 
             var buildName = split[1];
 
             var build = await buildFacade.CreateBuildAsync(buildName);
-            build.BuildCompleteEvent += SendMessage;
-            //build.BuildCompleteEvent += async b => await SendMessageAsync($"Build {build} finished with {build.Status} in {build.EndTime-build.StartTime:g}", turnContext, CancellationToken.None);
 
-            await SendMessageAsync($"Created build {build}", turnContext, cancellationToken);
-        }
+            await notificationService.AddNotificationAsync(build.Id, conversationId, ShouldWatch ? WatchLevel.Stage : WatchLevel.Build);
 
-        private async Task SendMessage(Build build)
-        {
-            var message = $"Build {build} finished with {build.Status} in {build.BuildDuration:g}";
-            var activity = MessageFactory.Text(message);
-            activity.Summary = message;
-            activity.TeamsNotifyUser();
-
-            AppCredentials.TrustServiceUrl(ServiceUrl);
-
-            var credentials = new MicrosoftAppCredentials("cba04884-c4c6-4dd7-b4e9-4e23c1f5e6e1", "Aaq7yD2Yrb.70kn4d57AY.j8B.NlW2_JKP");
-
-            var connectorClient = new ConnectorClient(new Uri(ServiceUrl), credentials);
-            await connectorClient.Conversations.SendToConversationAsync(conversationId, activity);
+            await notificationService.SendReplyAsync($"Created build {build}", turnContext, cancellationToken);
         }
     }
 }

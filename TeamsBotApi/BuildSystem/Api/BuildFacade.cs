@@ -8,6 +8,8 @@ namespace BuildSystem.Api
         private readonly BuildFactory buildFactory;
         private readonly BuildMonitor buildMonitor = new BuildMonitor();
 
+        public event StageCompleteDelegate StageCompleteEvent;
+
         public IReadOnlyCollection<Build> QueuedBuilds => buildMonitor.QueuedBuilds;
 
         public BuildFacade(IBuildRepository buildBuildRepository = null)

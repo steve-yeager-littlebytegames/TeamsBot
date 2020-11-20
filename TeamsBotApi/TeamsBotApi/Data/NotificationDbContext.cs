@@ -10,5 +10,13 @@ namespace TeamsBotApi.Data
             : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<NotificationDetails>().HasKey(
+                nameof(Data.NotificationDetails.BuildId),
+                nameof(Data.NotificationDetails.ChannelId));
+        }
     }
 }

@@ -13,9 +13,15 @@ namespace BuildSystem
         {
             IsIdle = false;
             activeBuild = build;
-            await build.StartAsync();
-            IsIdle = true;
-            onComplete(build);
+            try
+            {
+                await build.StartAsync();
+            }
+            finally
+            {
+                IsIdle = true;
+                onComplete(build);
+            }
         }
     }
 }

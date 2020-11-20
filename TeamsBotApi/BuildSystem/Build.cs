@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 
 namespace BuildSystem
 {
+    public delegate Task BuildCompleteDelegate(Build build);
+
+    public delegate Task StageCompleteDelegate(Build build, Stage stage);
+
     public class Build
     {
-        public delegate Task BuildCompleteDelegate(Build build);
-
-        public delegate void StageCompleteDelegate(Build build, Stage stage);
-
+        public event StageCompleteDelegate StageCompleteEvent;
         public event BuildCompleteDelegate BuildCompleteEvent;
 
         public Guid Id { get; }
@@ -47,7 +48,14 @@ namespace BuildSystem
 
             foreach(var stage in Stages)
             {
-                await stage.StartAsync();
+                try
+                {
+                    await stage.StartAsync();
+                }
+                finally
+                {
+                    StageCompleteEvent?.Invoke(this, stage);
+                }
             }
 
             Status = BuildStatus.Succeeded;

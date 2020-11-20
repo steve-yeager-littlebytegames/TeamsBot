@@ -12,6 +12,8 @@ namespace BuildSystem
         public DateTime EndTime { get; private set; }
         public StageStatus Status { get; private set; }
 
+        public TimeSpan Duration => EndTime - StartTime;
+
         public Stage(string name)
         {
             Name = name;

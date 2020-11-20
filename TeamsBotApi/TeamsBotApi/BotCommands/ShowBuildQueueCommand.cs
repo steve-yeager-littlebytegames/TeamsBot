@@ -5,6 +5,7 @@ using BuildSystem.Api;
 using CommandLine;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using TeamsBotApi.Services;
 
 namespace TeamsBotApi.BotCommands
 {
@@ -21,7 +22,7 @@ namespace TeamsBotApi.BotCommands
             return (true, string.Empty);
         }
 
-        protected override async Task ExecuteInternalAsync(BuildFacade buildFacade, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task ExecuteInternalAsync(BuildFacade buildFacade, NotificationService notificationService, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var message = new StringBuilder();
             message.AppendLine($"Builds in queue: {buildFacade.QueuedBuilds.Count}");
@@ -30,7 +31,7 @@ namespace TeamsBotApi.BotCommands
                 message.AppendLine($"# {build}");
             }
 
-            await SendMessageAsync(message.ToString(), turnContext, cancellationToken);
+            await notificationService.SendReplyAsync(message.ToString(), turnContext, cancellationToken);
         }
     }
 }
