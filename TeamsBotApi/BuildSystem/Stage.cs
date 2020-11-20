@@ -26,11 +26,13 @@ namespace BuildSystem
             Status = StageStatus.Running;
             StartTime = DateTime.Now;
 
-            var time = (int)(new Random().NextDouble() * 3 * 1000);
-            Debug.WriteLine($"Stage '{Name}' will take '{time}' ms.");
+            var random = new Random();
+            var isSuccess = random.NextDouble() <= 0.8f;
+            var time = (int)(random.NextDouble() * 5 * 1000);
+            Debug.WriteLine($"Stage '{Name}' will take '{time}' ms and {(isSuccess ? "Succeed" : "Fail")}");
             await Task.Delay(time);
 
-            Status = StageStatus.Succeeded;
+            Status = isSuccess ? StageStatus.Succeeded : StageStatus.Failed;
             EndTime = DateTime.Now;
         }
     }
