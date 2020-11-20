@@ -5,6 +5,7 @@ namespace BuildSystem.Api
     public interface IBuildQueue
     {
         public event StageCompleteDelegate StageCompleteEvent;
+        public event BuildCompleteDelegate BuildCompleteEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds { get; }
     }

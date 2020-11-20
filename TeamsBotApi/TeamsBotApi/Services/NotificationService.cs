@@ -32,6 +32,7 @@ namespace TeamsBotApi.Services
             appPassword = configuration.GetValue<string>("MicrosoftAppPassword");
 
             buildFacade.StageCompleteEvent += OnStageComplete;
+            buildFacade.BuildCompleteEvent += OnBuildComplete;
         }
 
         public async Task AddNotificationAsync(Guid buildId, string channelId, WatchLevel watchLevel)
@@ -45,32 +46,25 @@ namespace TeamsBotApi.Services
 
         private async Task OnStageComplete(Build build, Stage stage)
         {
-            bool isBuildDone = build.Status == BuildStatus.Cancelled || build.Status == BuildStatus.Failed || build.Status == BuildStatus.Succeeded;
-
             var notifications = await notificationDb.NotificationDetails
-                .Where(nd => nd.BuildId == build.Id)
+                .Where(nd => nd.BuildId == build.Id && nd.WatchLevel >= WatchLevel.Stage)
                 .ToArrayAsync();
 
             foreach(var notification in notifications)
             {
-                if(notification.WatchLevel == WatchLevel.Build)
-                {
-                    if(isBuildDone)
-                    {
-                        await SendMessageAsync($"Build {build} finished with {build.Status} in {build.BuildDuration:g}", notification);
-                    }
-                }
-                else
-                {
-                    if(isBuildDone)
-                    {
-                        await SendMessageAsync($"Build {build} finished with {build.Status} in {build.BuildDuration:g}", notification);
-                    }
-                    else
-                    {
-                        await SendMessageAsync($"Stage {build} {stage} finished with {stage.Status} in {stage.Duration:g}", notification);
-                    }
-                }
+                await SendMessageAsync($"Stage {build} {stage} finished with {stage.Status} in {stage.Duration:g}", notification);
+            }
+        }
+
+        private async Task OnBuildComplete(Build build)
+        {
+            var notifications = await notificationDb.NotificationDetails
+                .Where(nd => nd.BuildId == build.Id && nd.WatchLevel >= WatchLevel.Build)
+                .ToArrayAsync();
+
+            foreach(var notification in notifications)
+            {
+                await SendMessageAsync($"Build {build} finished with {build.Status} in {build.BuildDuration:g}", notification);
             }
         }
 

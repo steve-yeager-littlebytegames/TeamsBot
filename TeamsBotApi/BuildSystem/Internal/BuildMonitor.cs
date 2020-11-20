@@ -12,6 +12,7 @@ namespace BuildSystem
         private readonly IReadOnlyCollection<BuildRunner> buildRunners = new[] {new BuildRunner()};
 
         public event StageCompleteDelegate StageCompleteEvent;
+        public event BuildCompleteDelegate BuildCompleteEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds => queuedBuilds;
 

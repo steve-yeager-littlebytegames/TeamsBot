@@ -2,8 +2,8 @@
 {
     public enum WatchLevel
     {
-        None,
-        Build,
-        Stage,
+        None = 0,
+        Build = 1,
+        Stage = 2,
     }
 }
