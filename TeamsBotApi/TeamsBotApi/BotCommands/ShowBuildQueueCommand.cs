@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BuildSystem.Api;
@@ -28,7 +29,8 @@ namespace TeamsBotApi.BotCommands
             message.AppendLine($"Builds in queue: {buildFacade.QueuedBuilds.Count}");
             foreach(var build in buildFacade.QueuedBuilds)
             {
-                message.AppendLine($"# {build}");
+                var queueTime = DateTime.Now - build.QueueTime;
+                message.AppendLine($"[{queueTime:g}] {build}");
             }
 
             await notificationService.SendReplyAsync(message.ToString(), turnContext, cancellationToken);
