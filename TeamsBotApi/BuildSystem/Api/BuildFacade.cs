@@ -17,6 +17,16 @@ namespace BuildSystem.Api
             buildBuildRepository ??= new InMemoryBuildRepository();
 
             buildFactory = new BuildFactory(buildBuildRepository);
+
+            buildMonitor.StageCompleteEvent += OnStageComplete;
+        }
+
+        private async Task OnStageComplete(Build build, Stage stage)
+        {
+            if(StageCompleteEvent != null)
+            {
+                await StageCompleteEvent?.Invoke(build, stage);
+            }
         }
 
         public async Task<Build> CreateBuildAsync(string definitionName)

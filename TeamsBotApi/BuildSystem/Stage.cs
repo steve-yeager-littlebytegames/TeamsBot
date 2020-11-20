@@ -19,6 +19,8 @@ namespace BuildSystem
             Name = name;
         }
 
+        public override string ToString() => Name;
+
         public async Task StartAsync()
         {
             Status = StageStatus.Running;

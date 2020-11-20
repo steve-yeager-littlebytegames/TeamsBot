@@ -27,7 +27,7 @@ namespace TeamsBotApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<NotificationDbContext>(options => options.UseInMemoryDatabase("Notifications"));
+            services.AddDbContext<NotificationDbContext>(options => options.UseInMemoryDatabase("Notifications"), ServiceLifetime.Singleton);
             services.AddDbContext<BuildDbContext>(options => options.UseInMemoryDatabase("Builds"), ServiceLifetime.Singleton);
 
             services.AddControllers();

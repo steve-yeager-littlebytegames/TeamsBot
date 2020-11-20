@@ -36,7 +36,10 @@ namespace BuildSystem
 
         private async Task OnStageComplete(Build build, Stage stage)
         {
-            await StageCompleteEvent?.Invoke(build, stage);
+            if(StageCompleteEvent != null)
+            {
+                await StageCompleteEvent?.Invoke(build, stage);
+            }
         }
 
         private void OnBuildComplete(Build build)
