@@ -5,7 +5,6 @@ using BuildSystem.Api;
 
 namespace BuildSystem
 {
-
     internal class BuildMonitor : IBuildQueue
     {
         private readonly Queue<Build> queuedBuilds = new Queue<Build>();
@@ -32,7 +31,8 @@ namespace BuildSystem
         private void RunBuild(Build build, BuildRunner availableBuildRunner)
         {
             build.StageCompleteEvent += OnStageComplete;
-            availableBuildRunner.RunBuild(build, OnBuildComplete);
+            build.BuildCompleteEvent += OnBuildComplete;
+            availableBuildRunner.RunBuild(build);
         }
 
         private async Task OnStageComplete(Build build, Stage stage)
@@ -43,9 +43,12 @@ namespace BuildSystem
             }
         }
 
-        private void OnBuildComplete(Build build)
+        private async Task OnBuildComplete(Build build)
         {
-            //BuildCompleteEvent?.Invoke(build);
+            if(BuildCompleteEvent != null)
+            {
+                await BuildCompleteEvent.Invoke(build);
+            }
 
             if(queuedBuilds.Count == 0)
             {
@@ -56,7 +59,7 @@ namespace BuildSystem
             if(availableBuildRunner != null)
             {
                 var nextBuild = queuedBuilds.Dequeue();
-                availableBuildRunner.RunBuild(nextBuild, OnBuildComplete);
+                RunBuild(nextBuild, availableBuildRunner);
             }
         }
     }

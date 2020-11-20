@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace BuildSystem
 {
@@ -9,7 +8,7 @@ namespace BuildSystem
 
         public bool IsIdle { get; private set; } = true;
 
-        public async Task RunBuild(Build build, Action<Build> onComplete)
+        public async Task RunBuild(Build build)
         {
             IsIdle = false;
             activeBuild = build;
@@ -20,7 +19,6 @@ namespace BuildSystem
             finally
             {
                 IsIdle = true;
-                onComplete(build);
             }
         }
     }
