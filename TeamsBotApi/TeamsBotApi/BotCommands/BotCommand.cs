@@ -23,16 +23,17 @@ namespace TeamsBotApi.BotCommands
         public async Task ExecuteAsync(BuildFacade buildFacade, NotificationService notificationService, string text, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var split = text.Split();
-            var (isValid, errorMessage) = Validate(text, split, turnContext);
+            //var (isValid, errorMessage) = Validate(text, split, turnContext);
+            await ExecuteInternalAsync(buildFacade, text, split, turnContext, cancellationToken);
 
-            if(isValid)
-            {
-                await ExecuteInternalAsync(buildFacade, text, split, turnContext, cancellationToken);
-            }
-            else
-            {
-                await SendMessageAsync(errorMessage, turnContext, cancellationToken);
-            }
+            //if(isValid)
+            //{
+            //    await ExecuteInternalAsync(buildFacade, text, split, turnContext, cancellationToken);
+            //}
+            //else
+            //{
+            //    await SendMessageAsync(errorMessage, turnContext, cancellationToken);
+            //}
         }
 
         protected static async Task SendMessageAsync(string replyText, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
