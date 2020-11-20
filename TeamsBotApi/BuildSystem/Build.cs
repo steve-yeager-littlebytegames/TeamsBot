@@ -46,11 +46,19 @@ namespace BuildSystem
             Status = BuildStatus.Running;
             StartTime = DateTime.Now;
 
+            var lastStageStatus = StageStatus.None;
+
             foreach(var stage in Stages)
             {
+                if(lastStageStatus != StageStatus.None && lastStageStatus != StageStatus.Succeeded)
+                {
+                    break;
+                }
+
                 try
                 {
                     await stage.StartAsync();
+                    lastStageStatus = stage.Status;
                 }
                 finally
                 {
@@ -58,7 +66,7 @@ namespace BuildSystem
                 }
             }
 
-            Status = BuildStatus.Succeeded;
+            Status = lastStageStatus == StageStatus.Succeeded ? BuildStatus.Succeeded : BuildStatus.Failed;
             EndTime = DateTime.Now;
 
             BuildCompleteEvent?.Invoke(this);
