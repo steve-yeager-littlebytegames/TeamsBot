@@ -1,1 +1,1 @@
-ngrok http 54686 -host-header=localhost:54686
+CMD /k "ngrok http 54686 -host-header=localhost:54686"
