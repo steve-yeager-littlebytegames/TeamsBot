@@ -27,8 +27,8 @@ namespace BuildSystem
             StartTime = DateTime.Now;
 
             var random = new Random();
-            var isSuccess = random.NextDouble() <= 0.8f;
-            var time = (int)(random.NextDouble() * 5 * 1000);
+            var isSuccess = random.NextDouble() <= 0.9f;
+            var time = (int)(random.NextDouble() * 5 * 1000) + 1000;
             Debug.WriteLine($"Stage '{Name}' will take '{time}' ms and {(isSuccess ? "Succeed" : "Fail")}");
             await Task.Delay(time);
 
