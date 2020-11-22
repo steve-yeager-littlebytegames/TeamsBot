@@ -10,14 +10,9 @@ using TeamsBotApi.Services;
 
 namespace TeamsBotApi.BotCommands
 {
-    [Verb("/queue")]
+    [Verb("queue", HelpText = "Show details about the build queue.")]
     public class ShowBuildQueueCommand : BotCommand
     {
-        public ShowBuildQueueCommand()
-            : base("queue")
-        {
-        }
-
         protected override (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext)
         {
             return (true, string.Empty);

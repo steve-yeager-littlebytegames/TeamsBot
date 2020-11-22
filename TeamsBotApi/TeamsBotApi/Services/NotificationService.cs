@@ -84,7 +84,7 @@ namespace TeamsBotApi.Services
 
         public async Task SendReplyAsync(string replyText, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Text(replyText, replyText), cancellationToken);
+            await turnContext.SendActivityAsync(MessageFactory.Text(replyText), cancellationToken);
         }
     }
 }

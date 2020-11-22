@@ -9,13 +9,6 @@ namespace TeamsBotApi.BotCommands
 {
     public abstract class BotCommand
     {
-        public string CommandString { get; }
-
-        protected BotCommand(string commandString)
-        {
-            CommandString = $"/{commandString}";
-        }
-
         protected abstract (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext);
 
         protected abstract Task ExecuteInternalAsync(BuildFacade buildFacade, NotificationService notificationService, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);

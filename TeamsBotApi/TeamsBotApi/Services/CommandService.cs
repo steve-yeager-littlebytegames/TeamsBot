@@ -9,6 +9,8 @@ namespace TeamsBotApi.Services
 {
     public class CommandService
     {
+        private const string InfraxCommand = "/infrax ";
+
         private readonly CommandParser commandParser;
         private readonly NotificationService notificationService;
         private readonly BuildFacade buildFacade;
@@ -25,6 +27,9 @@ namespace TeamsBotApi.Services
         public async Task ProcessCommandAsync(string message, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             logger.LogInformation("Processing Command.");
+            var startIndex = message.IndexOf(InfraxCommand) + InfraxCommand.Length;
+            message = message.Substring(startIndex);
+
             var command = commandParser.Parse(message);
             await command.ExecuteAsync(buildFacade, notificationService, message, turnContext, cancellationToken);
         }

@@ -9,18 +9,13 @@ using TeamsBotApi.Services;
 
 namespace TeamsBotApi.BotCommands
 {
-    [Verb("/build")]
+    [Verb("build", HelpText = "Start new builds.")]
     public class StartBuildCommand : BotCommand
     {
         private string conversationId;
 
         [Option('w', "watch")]
         public bool ShouldWatch { get; set; }
-
-        public StartBuildCommand()
-            : base("build")
-        {
-        }
 
         protected override (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext)
         {

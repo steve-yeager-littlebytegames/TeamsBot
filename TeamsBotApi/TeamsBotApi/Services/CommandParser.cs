@@ -1,5 +1,4 @@
-﻿using System;
-using CommandLine;
+﻿using CommandLine;
 using TeamsBotApi.BotCommands;
 
 namespace TeamsBotApi.Services
@@ -9,8 +8,7 @@ namespace TeamsBotApi.Services
         public BotCommand Parse(string text)
         {
             var textSplit = text.Split();
-
-            var command = Parser.Default.ParseArguments<StartBuildCommand, ShowBuildQueueCommand>(textSplit)
+            var command = Parser.Default.ParseArguments<StartBuildCommand, ShowBuildQueueCommand, HelpCommand>(textSplit)
                 .MapResult((BotCommand c) => c, errors => null);
             return command;
         }
