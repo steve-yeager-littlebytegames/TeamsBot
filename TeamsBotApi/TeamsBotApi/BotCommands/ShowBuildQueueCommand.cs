@@ -2,10 +2,13 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveCards;
+using AdaptiveCards.Rendering.Html;
 using BuildSystem.Api;
 using CommandLine;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using TeamsBotApi.Services;
 
 namespace TeamsBotApi.BotCommands
@@ -28,7 +31,37 @@ namespace TeamsBotApi.BotCommands
                 message.AppendLine($"[{queueTime:g}] {build}");
             }
 
+            await SendCardAsync(turnContext);
             await notificationService.SendReplyAsync(message.ToString(), turnContext, cancellationToken);
+        }
+
+        private async Task SendCardAsync(ITurnContext<IMessageActivity> turnContext)
+        {
+            var renderer = new AdaptiveCardRenderer();
+            //var card = new AdaptiveCard(renderer.SupportedSchemaVersion)
+            var card = new AdaptiveCard("1.0")
+            {
+                Id = "test",
+                Type = "AdaptiveCard",
+                Speak = "blah",
+                Body =
+                {
+                    new AdaptiveTextBlock("hello"),
+                    new AdaptiveRichTextBlock
+                    {
+                        Inlines =
+                        {
+                            new AdaptiveTextRun("1. Green\r2. Orange\r3. Blue")
+                        }
+                    },
+                }
+            };
+
+            var json = JsonConvert.SerializeObject(card);
+
+            var attachment = MessageFactory.Attachment(new Attachment("application/vnd.microsoft.card.adaptive", content: card));
+
+            await turnContext.SendActivityAsync(attachment);
         }
     }
 }
