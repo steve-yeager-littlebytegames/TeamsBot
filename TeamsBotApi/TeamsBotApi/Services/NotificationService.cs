@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveCards;
 using BuildSystem;
 using BuildSystem.Api;
 using Microsoft.Bot.Builder;
@@ -85,6 +87,22 @@ namespace TeamsBotApi.Services
         public async Task SendReplyAsync(string replyText, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(MessageFactory.Text(replyText), cancellationToken);
+        }
+
+        public AdaptiveCard CreateCard(List<AdaptiveElement> body)
+        {
+            return new AdaptiveCard("1.0")
+            {
+                Type = "AdaptiveCard",
+                Body = body,
+            };
+        }
+
+        public async Task SendCardAsync(AdaptiveCard card, ITurnContext<IMessageActivity> turnContext)
+        {
+            card.Version = "1.0";
+            var attachment = MessageFactory.Attachment(new Attachment("application/vnd.microsoft.card.adaptive", content: card));
+            await turnContext.SendActivityAsync(attachment);
         }
     }
 }
