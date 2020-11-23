@@ -24,7 +24,7 @@ namespace TeamsBotApi.BotCommands
         {
             var card = notificationService.CreateCard(
                 new AdaptiveTextBlock($"{buildFacade.Agents.Count(a => !a.IsIdle)}/{buildFacade.Agents.Count} agents are executing."),
-                new ListBuilder(buildFacade.Agents.Select(a => $"{a.Name} is {(a.IsIdle ? "idle" : $"executing {a.ActiveBuild.Name}")}")));
+                new ListBuilder(buildFacade.Agents.Select(a => $"{a.Name} is {(a.IsIdle ? "idle" : $"executing {a.ActiveBuild}")}")));
 
             await notificationService.SendCardAsync(card, turnContext);
         }
