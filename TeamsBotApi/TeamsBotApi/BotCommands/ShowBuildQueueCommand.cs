@@ -8,6 +8,7 @@ using BuildSystem.Api;
 using CommandLine;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using TeamsBotApi.Extensions;
 using TeamsBotApi.Services;
 using TeamsBotApi.UiHelpers;
 
@@ -26,7 +27,7 @@ namespace TeamsBotApi.BotCommands
             var card = notificationService.CreateCard(new List<AdaptiveElement>
             {
                 new AdaptiveTextBlock($"Builds in queue: {buildFacade.QueuedBuilds.Count}"),
-                new ListBuilder(buildFacade.QueuedBuilds.Select(b => $"[{(DateTime.Now - b.QueueTime):g}] {b}"))
+                new ListBuilder(buildFacade.QueuedBuilds.Select(b => $"[{(DateTime.Now - b.QueueTime).ToDuration()}] {b}"))
             });
 
             await notificationService.SendCardAsync(card, turnContext);

@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TeamsBotApi.Data;
+using TeamsBotApi.Extensions;
 
 namespace TeamsBotApi.Services
 {
@@ -54,7 +55,7 @@ namespace TeamsBotApi.Services
 
             foreach(var notification in notifications)
             {
-                await SendMessageAsync($"Stage {build} {stage} finished with {stage.Status} in {stage.Duration:g}", notification);
+                await SendMessageAsync($"Stage {build} {stage} finished with {stage.Status} in {stage.Duration.ToDuration()}", notification);
             }
         }
 
@@ -66,7 +67,7 @@ namespace TeamsBotApi.Services
 
             foreach(var notification in notifications)
             {
-                await SendMessageAsync($"Build {build} finished with {build.Status} in {build.BuildDuration:g}", notification);
+                await SendMessageAsync($"Build {build} finished with {build.Status} in {build.BuildDuration.ToDuration()}", notification);
             }
         }
 
