@@ -90,12 +90,12 @@ namespace TeamsBotApi.Services
             await turnContext.SendActivityAsync(MessageFactory.Text(replyText), cancellationToken);
         }
 
-        public AdaptiveCard CreateCard(List<AdaptiveElement> body)
+        public AdaptiveCard CreateCard(params AdaptiveElement[] body)
         {
             return new AdaptiveCard("1.0")
             {
                 Type = "AdaptiveCard",
-                Body = body,
+                Body = body.ToList(),
             };
         }
 

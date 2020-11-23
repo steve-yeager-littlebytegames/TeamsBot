@@ -22,11 +22,12 @@ namespace TeamsBotApi.BotCommands
         protected override async Task ExecuteInternalAsync(BuildFacade buildFacade, NotificationService notificationService, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             // TODO: Don't duplicate.
-            var command = Parser.Default.ParseArguments<StartBuildCommand, ShowBuildQueueCommand, HelpCommand>(new List<string>{"help"});
+            var command = Parser.Default.ParseArguments<StartBuildCommand, ShowBuildQueueCommand, HelpCommand, ShowAgentsCommand>(new List<string>{"help"});
             var helpText = HelpText.AutoBuild(command, h =>
                 {
                     h.Heading = "Infrax bot command help.";
                     h.Copyright = string.Empty;
+                    h.AutoHelp = false;
                     return h;
                 },
                 e => e,

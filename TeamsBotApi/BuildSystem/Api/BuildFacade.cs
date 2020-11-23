@@ -12,6 +12,7 @@ namespace BuildSystem.Api
         public event BuildCompleteDelegate BuildCompleteEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds => buildMonitor.QueuedBuilds;
+        public IReadOnlyCollection<BuildRunner> Agents => buildMonitor.Agents;
 
         public BuildFacade(IBuildRepository buildBuildRepository = null)
         {

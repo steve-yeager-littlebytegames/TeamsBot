@@ -8,16 +8,16 @@ namespace BuildSystem
     internal class BuildMonitor : IBuildQueue
     {
         private readonly Queue<Build> queuedBuilds = new Queue<Build>();
-        private readonly IReadOnlyCollection<BuildRunner> buildRunners = new[] {new BuildRunner()};
 
         public event StageCompleteDelegate StageCompleteEvent;
         public event BuildCompleteDelegate BuildCompleteEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds => queuedBuilds;
+        public IReadOnlyCollection<BuildRunner> Agents { get; } = new[] {new BuildRunner("Windows Agent 1"), new BuildRunner("OSX Agent 1"), new BuildRunner("Linux Agent 1")};
 
         public void QueueBuild(Build build)
         {
-            var availableBuildRunner = buildRunners.FirstOrDefault(br => br.IsIdle);
+            var availableBuildRunner = Agents.FirstOrDefault(br => br.IsIdle);
             if(availableBuildRunner != null)
             {
                 RunBuild(build, availableBuildRunner);
@@ -56,7 +56,7 @@ namespace BuildSystem
                 return;
             }
 
-            var availableBuildRunner = buildRunners.FirstOrDefault(br => br.IsIdle);
+            var availableBuildRunner = Agents.FirstOrDefault(br => br.IsIdle);
             if(availableBuildRunner != null)
             {
                 var nextBuild = queuedBuilds.Dequeue();

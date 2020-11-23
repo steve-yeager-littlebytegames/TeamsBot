@@ -7,26 +7,24 @@ using BuildSystem.Api;
 using CommandLine;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using TeamsBotApi.Extensions;
 using TeamsBotApi.Services;
 using TeamsBotApi.UiHelpers;
 
 namespace TeamsBotApi.BotCommands
 {
-    [Verb("queue", HelpText = "Show details about the build queue.")]
-    public class ShowBuildQueueCommand : BotCommand
+    [Verb("agents", HelpText = "Show agent statuses.")]
+    public class ShowAgentsCommand : BotCommand
     {
         protected override (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext)
         {
-            return (true, string.Empty);
+            throw new NotImplementedException();
         }
 
         protected override async Task ExecuteInternalAsync(BuildFacade buildFacade, NotificationService notificationService, string text, string[] split, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var card = notificationService.CreateCard(
-                new AdaptiveTextBlock($"Builds in queue: {buildFacade.QueuedBuilds.Count}"),
-                new ListBuilder(buildFacade.QueuedBuilds.Select(b => $"[{(DateTime.Now - b.QueueTime).ToDuration()}] {b}"))
-            );
+                new AdaptiveTextBlock($"{buildFacade.Agents.Count(a => !a.IsIdle)}/{buildFacade.Agents.Count} agents are executing."),
+                new ListBuilder(buildFacade.Agents.Select(a => $"{a.Name} is {(a.IsIdle ? "idle" : $"executing {a.ActiveBuild.Name}")}")));
 
             await notificationService.SendCardAsync(card, turnContext);
         }

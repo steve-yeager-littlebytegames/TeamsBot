@@ -8,5 +8,6 @@ namespace BuildSystem.Api
         public event BuildCompleteDelegate BuildCompleteEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds { get; }
+        public IReadOnlyCollection<BuildRunner> Agents { get; }
     }
 }

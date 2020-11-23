@@ -2,16 +2,21 @@
 
 namespace BuildSystem
 {
-    internal class BuildRunner
+    public class BuildRunner
     {
-        private Build activeBuild;
-
+        public string Name { get; }
         public bool IsIdle { get; private set; } = true;
+        public Build ActiveBuild { get; private set; }
+
+        public BuildRunner(string name)
+        {
+            Name = name;
+        }
 
         public async Task RunBuild(Build build)
         {
             IsIdle = false;
-            activeBuild = build;
+            ActiveBuild = build;
             try
             {
                 await build.StartAsync();
