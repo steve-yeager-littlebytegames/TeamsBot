@@ -17,6 +17,9 @@ namespace TeamsBotApi.BotCommands
         [Option('w', "watch")]
         public bool ShouldWatch { get; set; }
 
+        [Option('c', "count", Default = 1)]
+        public int BuildCount { get; set; }
+
         protected override (bool isValid, string errorMessage) Validate(string text, string[] split, ITurnContext<IMessageActivity> turnContext)
         {
             var isCorrectSize = split.Length == 2;
@@ -35,10 +38,16 @@ namespace TeamsBotApi.BotCommands
 
             var buildName = split[1];
 
+            for(int i = 0; i < BuildCount; i++)
+            {
+                await CreateBuildAsync(buildFacade, notificationService, turnContext, cancellationToken, buildName);
+            }
+        }
+
+        private async Task CreateBuildAsync(BuildFacade buildFacade, NotificationService notificationService, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken, string buildName)
+        {
             var build = await buildFacade.CreateBuildAsync(buildName);
-
             await notificationService.AddNotificationAsync(build.Id, conversationId, ShouldWatch ? WatchLevel.Stage : WatchLevel.Build);
-
             await notificationService.SendReplyAsync($"Created build {build}", turnContext, cancellationToken);
         }
     }
