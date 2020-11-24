@@ -32,6 +32,7 @@ namespace BuildSystem
                 BuildUpdateEvent?.Invoke(this);
             }
         }
+        public Stage CurrentStage { get; private set; }
 
         public TimeSpan BuildDuration => EndTime - StartTime;
 
@@ -66,6 +67,7 @@ namespace BuildSystem
                 }
                 else
                 {
+                    CurrentStage = stage;
                     await stage.StartAsync(OnStageUpdate);
                     lastStageStatus = stage.Status;
                 }

@@ -75,9 +75,13 @@ namespace TeamsBotApi.Services
                 .Where(nd => nd.BuildId == build.Id && nd.WatchLevel >= WatchLevel.Build)
                 .ToArrayAsync();
 
+            var message = build.Status == BuildStatus.Succeeded
+                ? $"Build {build} finished with {build.Status} in {build.BuildDuration.ToDuration()}"
+                : $"Build {build} finished with {build.Status} at stage {build.CurrentStage} in {build.BuildDuration.ToDuration()}";
+
             foreach(var notification in notifications)
             {
-                await SendMessageAsync($"Build {build} finished with {build.Status} in {build.BuildDuration.ToDuration()}", notification);
+                await SendMessageAsync(message, notification);
             }
         }
 
