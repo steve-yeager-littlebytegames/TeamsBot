@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,8 +33,8 @@ namespace TeamsBotApi.Services
             appId = configuration.GetValue<string>("MicrosoftAppId");
             appPassword = configuration.GetValue<string>("MicrosoftAppPassword");
 
-            buildFacade.StageCompleteEvent += OnStageComplete;
-            buildFacade.BuildCompleteEvent += OnBuildComplete;
+            buildFacade.StageUpdateEvent += OnStageUpdate;
+            buildFacade.BuildUpdateEvent += OnBuildUpdate;
         }
 
         public async Task AddNotificationAsync(Guid buildId, string channelId, WatchLevel watchLevel)
@@ -47,20 +46,31 @@ namespace TeamsBotApi.Services
             await notificationDb.SaveChangesAsync();
         }
 
-        private async Task OnStageComplete(Build build, Stage stage)
+        private async Task OnStageUpdate(Stage stage)
         {
+            if(stage.Status == StageStatus.Running)
+            {
+                return;
+            }
+
             var notifications = await notificationDb.NotificationDetails
-                .Where(nd => nd.BuildId == build.Id && nd.WatchLevel >= WatchLevel.Stage)
+                .Where(nd => nd.BuildId == stage.Build.Id && nd.WatchLevel >= WatchLevel.Stage)
                 .ToArrayAsync();
 
             foreach(var notification in notifications)
             {
-                await SendMessageAsync($"Stage {build} {stage} finished with {stage.Status} in {stage.Duration.ToDuration()}", notification);
+                await SendMessageAsync($"Stage {stage.Build} {stage} finished with {stage.Status} in {stage.Duration.ToDuration()}", notification);
             }
         }
 
-        private async Task OnBuildComplete(Build build)
+        private async Task OnBuildUpdate(Build build)
         {
+            // TODO: Send running notification.
+            if(build.Status == BuildStatus.Queued || build.Status == BuildStatus.Running)
+            {
+                return;
+            }
+
             var notifications = await notificationDb.NotificationDetails
                 .Where(nd => nd.BuildId == build.Id && nd.WatchLevel >= WatchLevel.Build)
                 .ToArrayAsync();

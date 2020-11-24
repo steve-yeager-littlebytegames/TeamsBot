@@ -14,6 +14,8 @@ namespace BuildSystem
             this.buildRepository = buildRepository;
         }
 
+        public event BuildCreatedDelegate BuildCreatedEvent;
+
         public async Task<Build> CreateBuildAsync(string definitionName)
         {
             var buildDefinition = BuildDefinitions.Definitions.First(bd => bd.Name.ToLower() == definitionName.ToLower());
@@ -22,8 +24,14 @@ namespace BuildSystem
             ++metaData.BuildCount;
 
             var build = new Build(definitionName, metaData.BuildCount, buildDefinition.StageNames.Select(sn => new Stage(sn)).ToArray());
+            foreach(var stage in build.Stages)
+            {
+                stage.Build = build;
+            }
 
             await buildRepository.SaveAsync(metaData);
+
+            BuildCreatedEvent?.Invoke(build);
 
             return build;
         }

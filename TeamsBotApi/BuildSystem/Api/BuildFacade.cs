@@ -8,8 +8,9 @@ namespace BuildSystem.Api
         private readonly BuildFactory buildFactory;
         private readonly BuildMonitor buildMonitor = new BuildMonitor();
 
-        public event StageCompleteDelegate StageCompleteEvent;
-        public event BuildCompleteDelegate BuildCompleteEvent;
+        public event BuildCreatedDelegate BuildCreatedEvent;
+        public event StageUpdateDelegate StageUpdateEvent;
+        public event BuildUpdateDelegate BuildUpdateEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds => buildMonitor.QueuedBuilds;
         public IReadOnlyCollection<BuildRunner> Agents => buildMonitor.Agents;
@@ -20,23 +21,23 @@ namespace BuildSystem.Api
 
             buildFactory = new BuildFactory(buildBuildRepository);
 
-            buildMonitor.StageCompleteEvent += OnStageComplete;
-            buildMonitor.BuildCompleteEvent += OnBuildComplete;
+            buildMonitor.StageUpdateEvent += OnStageComplete;
+            buildMonitor.BuildUpdateEvent += OnBuildComplete;
         }
 
-        private async Task OnStageComplete(Build build, Stage stage)
+        private async Task OnStageComplete(Stage stage)
         {
-            if(StageCompleteEvent != null)
+            if(StageUpdateEvent != null)
             {
-                await StageCompleteEvent?.Invoke(build, stage);
+                await StageUpdateEvent?.Invoke(stage);
             }
         }
 
         private async Task OnBuildComplete(Build build)
         {
-            if(BuildCompleteEvent != null)
+            if(BuildUpdateEvent != null)
             {
-                await BuildCompleteEvent?.Invoke(build);
+                await BuildUpdateEvent?.Invoke(build);
             }
         }
 

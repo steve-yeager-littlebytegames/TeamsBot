@@ -9,8 +9,8 @@ namespace BuildSystem
     {
         private readonly Queue<Build> queuedBuilds = new Queue<Build>();
 
-        public event StageCompleteDelegate StageCompleteEvent;
-        public event BuildCompleteDelegate BuildCompleteEvent;
+        public event StageUpdateDelegate StageUpdateEvent;
+        public event BuildUpdateDelegate BuildUpdateEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds => queuedBuilds;
         public IReadOnlyCollection<BuildRunner> Agents { get; } = new[] {new BuildRunner("Windows Agent 1"), new BuildRunner("OSX Agent 1"), new BuildRunner("Linux Agent 1")};
@@ -31,24 +31,24 @@ namespace BuildSystem
 
         private void RunBuild(Build build, BuildRunner availableBuildRunner)
         {
-            build.StageCompleteEvent += OnStageComplete;
-            build.BuildCompleteEvent += OnBuildComplete;
+            build.StageUpdateEvent += OnStageUpdate;
+            build.BuildUpdateEvent += OnBuildUpdate;
             availableBuildRunner.RunBuild(build);
         }
 
-        private async Task OnStageComplete(Build build, Stage stage)
+        private async Task OnStageUpdate(Stage stage)
         {
-            if(StageCompleteEvent != null)
+            if(StageUpdateEvent != null)
             {
-                await StageCompleteEvent?.Invoke(build, stage);
+                await StageUpdateEvent?.Invoke(stage);
             }
         }
 
-        private async Task OnBuildComplete(Build build)
+        private async Task OnBuildUpdate(Build build)
         {
-            if(BuildCompleteEvent != null)
+            if(BuildUpdateEvent != null)
             {
-                await BuildCompleteEvent.Invoke(build);
+                await BuildUpdateEvent.Invoke(build);
             }
 
             if(queuedBuilds.Count == 0)

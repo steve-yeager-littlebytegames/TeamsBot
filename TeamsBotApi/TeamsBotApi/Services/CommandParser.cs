@@ -8,7 +8,13 @@ namespace TeamsBotApi.Services
         public BotCommand Parse(string text)
         {
             var textSplit = text.Split();
-            var command = Parser.Default.ParseArguments<StartBuildCommand, ShowBuildQueueCommand, HelpCommand, ShowAgentsCommand>(textSplit)
+
+            var parser = new Parser(settings =>
+            {
+                settings.AutoHelp = false;
+                settings.AutoVersion = true;
+            });
+            var command = parser.ParseArguments<StartBuildCommand, ShowBuildQueueCommand, HelpCommand, ShowAgentsCommand>(textSplit)
                 .MapResult((BotCommand c) => c, errors => null);
             return command;
         }

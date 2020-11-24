@@ -7,7 +7,7 @@ namespace BuildSystem
     public class Stage
     {
         public string Name { get; }
-
+        public Build Build { get; set; }
         public DateTime StartTime { get; private set; }
         public DateTime EndTime { get; private set; }
         public StageStatus Status { get; private set; }

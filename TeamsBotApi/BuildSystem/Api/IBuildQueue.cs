@@ -4,8 +4,8 @@ namespace BuildSystem.Api
 {
     public interface IBuildQueue
     {
-        public event StageCompleteDelegate StageCompleteEvent;
-        public event BuildCompleteDelegate BuildCompleteEvent;
+        public event StageUpdateDelegate StageUpdateEvent;
+        public event BuildUpdateDelegate BuildUpdateEvent;
 
         public IReadOnlyCollection<Build> QueuedBuilds { get; }
         public IReadOnlyCollection<BuildRunner> Agents { get; }

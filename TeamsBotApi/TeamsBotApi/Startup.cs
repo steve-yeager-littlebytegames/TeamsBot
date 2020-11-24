@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using TeamsBotApi.Data;
 using TeamsBotApi.Services;
 
@@ -38,6 +39,7 @@ namespace TeamsBotApi
             services.AddSingleton(s => new BuildFacade(s.GetService<IBuildRepository>()));
             services.AddSingleton<IBuildRepository, BuildRepository>();
             services.AddSingleton<NotificationService>();
+            services.AddSingleton<MetricsService>();
             services.AddTransient<CommandParser>();
             services.AddTransient<CommandService>();
         }
@@ -57,6 +59,9 @@ namespace TeamsBotApi
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
             SeedDatabase(app);
+
+            // TODO: Move to hosted service.
+            app.ApplicationServices.GetService<MetricsService>();
         }
 
         private static void SeedDatabase(IApplicationBuilder app)

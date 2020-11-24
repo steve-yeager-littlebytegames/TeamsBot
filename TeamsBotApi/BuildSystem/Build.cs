@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 
 namespace BuildSystem
 {
-    public delegate Task BuildCompleteDelegate(Build build);
+    public delegate Task StageUpdateDelegate(Stage stage);
 
-    public delegate Task StageCompleteDelegate(Build build, Stage stage);
+    public delegate Task BuildUpdateDelegate(Build build);
 
     public class Build
     {
-        public event StageCompleteDelegate StageCompleteEvent;
-        public event BuildCompleteDelegate BuildCompleteEvent;
+        public event StageUpdateDelegate StageUpdateEvent;
+        public event BuildUpdateDelegate BuildUpdateEvent;
 
         public Guid Id { get; }
         public string Name { get; }
@@ -62,14 +62,14 @@ namespace BuildSystem
                 }
                 finally
                 {
-                    StageCompleteEvent?.Invoke(this, stage);
+                    StageUpdateEvent?.Invoke(stage);
                 }
             }
 
             Status = lastStageStatus == StageStatus.Succeeded ? BuildStatus.Succeeded : BuildStatus.Failed;
             EndTime = DateTime.Now;
 
-            BuildCompleteEvent?.Invoke(this);
+            BuildUpdateEvent?.Invoke(this);
         }
     }
 }
