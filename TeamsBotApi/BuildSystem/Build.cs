@@ -13,6 +13,8 @@ namespace BuildSystem
         public event StageUpdateDelegate StageUpdateEvent;
         public event BuildUpdateDelegate BuildUpdateEvent;
 
+        private BuildStatus status;
+
         public Guid Id { get; }
         public string Name { get; }
         public int Number { get; }
@@ -21,7 +23,15 @@ namespace BuildSystem
         public DateTime QueueTime { get; private set; }
         public DateTime StartTime { get; private set; }
         public DateTime EndTime { get; private set; }
-        public BuildStatus Status { get; private set; }
+        public BuildStatus Status
+        {
+            get => status;
+            private set
+            {
+                status = value;
+                BuildUpdateEvent?.Invoke(this);
+            }
+        }
 
         public TimeSpan BuildDuration => EndTime - StartTime;
 
@@ -37,39 +47,37 @@ namespace BuildSystem
 
         public void Queue()
         {
-            Status = BuildStatus.Queued;
             QueueTime = DateTime.Now;
+            Status = BuildStatus.Queued;
         }
 
         public async Task StartAsync()
         {
-            Status = BuildStatus.Running;
             StartTime = DateTime.Now;
+            Status = BuildStatus.Running;
 
             var lastStageStatus = StageStatus.None;
 
             foreach(var stage in Stages)
             {
-                if(lastStageStatus != StageStatus.None && lastStageStatus != StageStatus.Succeeded)
+                if(lastStageStatus == StageStatus.Failed || lastStageStatus == StageStatus.Cancelled)
                 {
-                    break;
+                    stage.Skip(OnStageUpdate);
                 }
-
-                try
+                else
                 {
-                    await stage.StartAsync();
+                    await stage.StartAsync(OnStageUpdate);
                     lastStageStatus = stage.Status;
-                }
-                finally
-                {
-                    StageUpdateEvent?.Invoke(stage);
                 }
             }
 
-            Status = lastStageStatus == StageStatus.Succeeded ? BuildStatus.Succeeded : BuildStatus.Failed;
             EndTime = DateTime.Now;
+            Status = lastStageStatus == StageStatus.Succeeded ? BuildStatus.Succeeded : BuildStatus.Failed;
+        }
 
-            BuildUpdateEvent?.Invoke(this);
+        private Task OnStageUpdate(Stage stage)
+        {
+            return StageUpdateEvent?.Invoke(stage);
         }
     }
 }

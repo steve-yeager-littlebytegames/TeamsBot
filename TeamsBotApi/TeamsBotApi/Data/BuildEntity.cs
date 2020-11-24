@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BuildSystem;
 
 namespace TeamsBotApi.Data
@@ -27,6 +28,7 @@ namespace TeamsBotApi.Data
                 StartTime = build.StartTime,
                 EndTime = build.EndTime,
                 Status = build.Status,
+                Stages = build.Stages.Cast<StageEntity>().ToList(),
             };
         }
     }

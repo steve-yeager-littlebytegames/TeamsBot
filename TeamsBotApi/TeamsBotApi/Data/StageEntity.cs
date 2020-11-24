@@ -11,6 +11,8 @@ namespace TeamsBotApi.Data
         public DateTime EndTime { get; private set; }
         public StageStatus Status { get; private set; }
 
+        public BuildEntity Build { get; set; }
+
         public static implicit operator StageEntity(Stage stage)
         {
             return new StageEntity

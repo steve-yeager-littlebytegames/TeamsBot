@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BuildSystem;
 using BuildSystem.Api;
 using Microsoft.Extensions.Logging;
@@ -24,22 +23,22 @@ namespace TeamsBotApi.Services
 
         private async Task OnBuildCreated(Build build)
         {
-            logger.LogInformation($"{build} → {build.Status}");
+            logger.LogInformation($"{build}→{build.Status}");
             buildDb.Builds.Add(build);
-            buildDb.Stages.AddRange(build.Stages.Cast<StageEntity>());
+            //buildDb.Stages.AddRange(build.Stages.Cast<StageEntity>());
             await buildDb.SaveChangesAsync();
         }
 
         private async Task OnStageUpdate(Stage stage)
         {
-            logger.LogInformation($"{stage} → {stage.Status}");
+            logger.LogInformation($"{stage}→{stage.Status}");
             buildDb.Stages.Update(stage);
             await buildDb.SaveChangesAsync();
         }
 
         private async Task OnBuildUpdate(Build build)
         {
-            logger.LogInformation($"{build} → {build.Status}");
+            logger.LogInformation($"{build}→{build.Status}");
             buildDb.Builds.Update(build);
             await buildDb.SaveChangesAsync();
         }

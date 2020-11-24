@@ -15,25 +15,15 @@ namespace BuildSystem
         public IReadOnlyCollection<Build> QueuedBuilds => queuedBuilds;
         public IReadOnlyCollection<BuildRunner> Agents { get; } = new[] {new BuildRunner("Windows Agent 1"), new BuildRunner("OSX Agent 1"), new BuildRunner("Linux Agent 1")};
 
-        public void QueueBuild(Build build)
-        {
-            var availableBuildRunner = Agents.FirstOrDefault(br => br.IsIdle);
-            if(availableBuildRunner != null)
-            {
-                RunBuild(build, availableBuildRunner);
-            }
-            else
-            {
-                queuedBuilds.Enqueue(build);
-                build.Queue();
-            }
-        }
-
-        private void RunBuild(Build build, BuildRunner availableBuildRunner)
+        public async Task QueueBuild(Build build)
         {
             build.StageUpdateEvent += OnStageUpdate;
             build.BuildUpdateEvent += OnBuildUpdate;
-            availableBuildRunner.RunBuild(build);
+
+            queuedBuilds.Enqueue(build);
+            build.Queue();
+
+            TryRunNextBuild();
         }
 
         private async Task OnStageUpdate(Stage stage)
@@ -51,6 +41,11 @@ namespace BuildSystem
                 await BuildUpdateEvent.Invoke(build);
             }
 
+            TryRunNextBuild();
+        }
+
+        private void TryRunNextBuild()
+        {
             if(queuedBuilds.Count == 0)
             {
                 return;
@@ -60,7 +55,7 @@ namespace BuildSystem
             if(availableBuildRunner != null)
             {
                 var nextBuild = queuedBuilds.Dequeue();
-                RunBuild(nextBuild, availableBuildRunner);
+                availableBuildRunner.RunBuild(nextBuild);
             }
         }
     }

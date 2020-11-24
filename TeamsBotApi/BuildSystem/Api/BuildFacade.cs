@@ -21,8 +21,17 @@ namespace BuildSystem.Api
 
             buildFactory = new BuildFactory(buildBuildRepository);
 
+            buildFactory.BuildCreatedEvent += OnBuildCreated;
             buildMonitor.StageUpdateEvent += OnStageComplete;
             buildMonitor.BuildUpdateEvent += OnBuildComplete;
+        }
+
+        private async Task OnBuildCreated(Build build)
+        {
+            if(BuildCreatedEvent != null)
+            {
+                await BuildCreatedEvent?.Invoke(build);
+            }
         }
 
         private async Task OnStageComplete(Stage stage)
@@ -44,7 +53,7 @@ namespace BuildSystem.Api
         public async Task<Build> CreateBuildAsync(string definitionName)
         {
             var build = await buildFactory.CreateBuildAsync(definitionName);
-            buildMonitor.QueueBuild(build);
+            await buildMonitor.QueueBuild(build);
             return build;
         }
     }
